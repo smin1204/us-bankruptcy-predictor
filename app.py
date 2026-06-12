@@ -13,8 +13,7 @@ st.set_page_config(
 
 @st.cache_resource
 def load_models():
-    # 이 함수 안의 코드는 앱이 켜질 때 딱 한 번만 실행됩니다.
-    m  = joblib.load("us_bankruptcy_model.joblib")
+    m  = joblib.load("us_threshold.joblib") 
     s  = joblib.load("us_scaler.joblib")
     f  = joblib.load("us_features.joblib")
     t  = joblib.load("us_threshold.joblib")
@@ -25,7 +24,6 @@ try:
     model, scaler, FEATURES, THRESHOLD, FI = load_models()
 except Exception as e:
     st.error(f"모델 파일을 찾을 수 없습니다: {e}")
-    st.info("VS Code 터미널에서 `python train.py`를 먼저 실행하세요.")
     st.stop()
 
 eps = 1e-9
