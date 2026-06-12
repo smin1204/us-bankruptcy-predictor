@@ -104,16 +104,18 @@ if st.button("부도 위험 진단 실행", type="primary", use_container_width=
         feat_dict["EBIT_TA"], feat_dict["MV_TL"], feat_dict["S_TA"]
     )
 
-    if risk_pct < 20:
+    t_pct = THRESHOLD * 100
+
+    if risk_pct < t_pct * 0.5:     # 임계값의 절반 미만 (완전 안전)
         grade, color, icon = "LOW RISK",    "#2ecc71", "🟢"
         grade_kr = "저위험 — 안전 구간"
-    elif risk_pct < 40:
+    elif risk_pct < t_pct * 0.8:   # 임계값의 80% 미만
         grade, color, icon = "WATCH",       "#f39c12", "🟡"
         grade_kr = "관찰 필요 — 경미한 위험 신호"
-    elif risk_pct < THRESHOLD * 100:
+    elif risk_pct < t_pct:         # 임계값 도달 직전
         grade, color, icon = "CAUTION",     "#e67e22", "🟠"
         grade_kr = "주의 구간 — 재무 구조 점검 권고"
-    else:
+    else:                          # 임계값 초과 (15.2%는 무조건 여기 걸림!)
         grade, color, icon = "HIGH RISK",   "#e74c3c", "🔴"
         grade_kr = "고위험 — 부도 가능성 임박"
 
@@ -125,20 +127,20 @@ if st.button("부도 위험 진단 실행", type="primary", use_container_width=
             value=risk_pct,
             title={"text": "부도 위험 확률 (%)", "font": {"size": 18}},
             number={"suffix": "%", "font": {"size": 40}},
-            delta={"reference": THRESHOLD * 100, "increasing": {"color": "#e74c3c"}, "decreasing": {"color": "#2ecc71"}},
+            delta={"reference": t_pct, "increasing": {"color": "#e74c3c"}, "decreasing": {"color": "#2ecc71"}},
             gauge={
-                "axis": {"range": [0, 100], "tickwidth": 1},
+                "axis": {"range": [0, max(100, t_pct * 3)], "tickwidth": 1}, # 스케일도 동적 조정
                 "bar":  {"color": color, "thickness": 0.25},
                 "steps": [
-                    {"range": [0,  20],  "color": "#d5f5e3"},
-                    {"range": [20, 40],  "color": "#fef9e7"},
-                    {"range": [40, THRESHOLD*100], "color": "#fdebd0"},
-                    {"range": [THRESHOLD*100, 100], "color": "#fadbd8"},
+                    {"range": [0,  t_pct * 0.5],  "color": "#d5f5e3"},
+                    {"range": [t_pct * 0.5, t_pct * 0.8],  "color": "#fef9e7"},
+                    {"range": [t_pct * 0.8, t_pct], "color": "#fdebd0"},
+                    {"range": [t_pct, max(100, t_pct * 3)], "color": "#fadbd8"},
                 ],
                 "threshold": {
                     "line": {"color": "#c0392b", "width": 3},
                     "thickness": 0.8,
-                    "value": THRESHOLD * 100
+                    "value": t_pct
                 },
             }
         ))
