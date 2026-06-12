@@ -13,7 +13,6 @@ st.set_page_config(
 
 @st.cache_resource
 def load_models():
-    # 이 함수 안의 코드는 앱이 켜질 때 딱 한 번만 실행됩니다.
     m  = joblib.load("us_bankruptcy_model.joblib")
     s  = joblib.load("us_scaler.joblib")
     f  = joblib.load("us_features.joblib")
@@ -106,16 +105,16 @@ if st.button("부도 위험 진단 실행", type="primary", use_container_width=
 
     t_pct = THRESHOLD * 100
 
-    if risk_pct < t_pct * 0.5:     # 임계값의 절반 미만 (완전 안전)
+    if risk_pct < t_pct * 0.5:
         grade, color, icon = "LOW RISK",    "#2ecc71", "🟢"
         grade_kr = "저위험 — 안전 구간"
-    elif risk_pct < t_pct * 0.8:   # 임계값의 80% 미만
+    elif risk_pct < t_pct * 0.8:
         grade, color, icon = "WATCH",       "#f39c12", "🟡"
         grade_kr = "관찰 필요 — 경미한 위험 신호"
-    elif risk_pct < t_pct:         # 임계값 도달 직전
+    elif risk_pct < t_pct:
         grade, color, icon = "CAUTION",     "#e67e22", "🟠"
         grade_kr = "주의 구간 — 재무 구조 점검 권고"
-    else:                          # 임계값 초과 (15.2%는 무조건 여기 걸림!)
+    else:
         grade, color, icon = "HIGH RISK",   "#e74c3c", "🔴"
         grade_kr = "고위험 — 부도 가능성 임박"
 
@@ -185,7 +184,7 @@ if st.button("부도 위험 진단 실행", type="primary", use_container_width=
 
     st.markdown("---")
 
-    st.subheader("🕸️ 재무 건전성 레이더")
+    st.subheader("재무 건전성 레이더")
 
     radar_labels  = ["유동성\n(CA/CL)", "수익성\n(ROA)", "레버리지\n(1-TL/TA)",
                      "수익률\n(NI/S)", "효율성\n(S/TA)", "성장성\n(RE/TA)"]
@@ -226,7 +225,7 @@ if st.button("부도 위험 진단 실행", type="primary", use_container_width=
     )
     st.plotly_chart(fig_radar, use_container_width=True)
 
-    st.subheader("🔍 부도 예측 기여도 (변수 중요도)")
+    st.subheader("부도 예측 기여도 (변수 중요도)")
     fi_df = pd.DataFrame.from_dict(FI, orient="index", columns=["importance"])
     fi_df = fi_df.sort_values("importance", ascending=True).tail(12)
     fig_fi = px.bar(
@@ -240,7 +239,7 @@ if st.button("부도 위험 진단 실행", type="primary", use_container_width=
     st.plotly_chart(fig_fi, use_container_width=True)
 
     st.markdown("---")
-    st.subheader("📄 리스크 관리 리포트")
+    st.subheader("리스크 관리 리포트")
 
     if z_score > 2.99:
         z_msg = f"✅ **안전 구간** (Z={z_score:.2f} > 2.99) — 단기 부도 가능성 낮음"
@@ -289,7 +288,7 @@ if st.button("부도 위험 진단 실행", type="primary", use_container_width=
         st.markdown(line)
 
 else:
-    st.info("👈 왼쪽 사이드바에 재무 수치를 입력한 후 **[부도 위험 진단 실행]** 버튼을 누르세요.")
+    st.info("<- 왼쪽 사이드바에 재무 수치를 입력한 후 **[부도 위험 진단 실행]** 버튼을 누르세요.")
 
     col1, col2, col3 = st.columns(3)
     with col1:
